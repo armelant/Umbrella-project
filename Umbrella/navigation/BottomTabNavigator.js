@@ -13,7 +13,7 @@ function BottomTabNavigator() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconPath;
-          let iconSize = 25;
+          let iconSize = 27;
 
           if (route.name === "Home") {
             iconPath = focused
@@ -37,8 +37,18 @@ function BottomTabNavigator() {
             />
           );
         },
-        tabBarActiveTintColor: "black",
-        tabBarInactiveTintColor: "grey",
+        tabBarActiveTintColor: "#0D171C",
+        tabBarInactiveTintColor: "#4F7D96",
+        tabBarStyle: {
+          height: 55,
+        },
+        headerTitleStyle: {
+          fontSize: 22,
+          color: "#0D171C",
+        },
+        headerStyle: {
+          backgroundColor: "#F5F5F5",
+        },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
