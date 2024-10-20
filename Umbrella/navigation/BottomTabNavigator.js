@@ -1,9 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
-import HomeScreen from '../screens/HomeScreen';
-import UmbrellasScreen from '../screens/UmbrellasScreen';
-import HistoryScreen from '../screens/HistoryScreen';
+// import HomeScreen from '../screens/HomeScreen';
+// import UmbrellasScreen from '../screens/UmbrellasScreen';
+// import HistoryScreen from '../screens/HistoryScreen';
+import TopTabNavigator from './TopTabNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -51,9 +52,9 @@ function BottomTabNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Umbrellas" component={UmbrellasScreen} />
-      <Tab.Screen name="History" component={HistoryScreen} />
+      <Tab.Screen name="Home" component={TopTabNavigator} />
+      <Tab.Screen name="Umbrellas" component={TopTabNavigator} />
+      <Tab.Screen name="History" component={TopTabNavigator} />
     </Tab.Navigator>
   );
 }
