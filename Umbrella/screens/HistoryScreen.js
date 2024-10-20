@@ -1,16 +1,10 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { gStyles } from '../styles/style';
 
 function HistoryScreen() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#F5F5F5",
-      }}
-    >
+    <View style={gStyles.main}>
       <Text>History</Text>
     </View>
   );
