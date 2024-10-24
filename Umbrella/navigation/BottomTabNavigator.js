@@ -1,17 +1,17 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 // import HomeScreen from '../screens/HomeScreen';
-// import UmbrellasScreen from '../screens/UmbrellasScreen';
-// import HistoryScreen from '../screens/HistoryScreen';
-import TopTabNavigator from './TopTabNavigator';
+import HomeStackNavigator from './HomeStackNavigator';
+import UmbrellasScreen from '../screens/UmbrellasScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 
 const Tab = createBottomTabNavigator();
 
 function BottomTabNavigator() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      screenOptions={({ route, navigation }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconPath;
           let iconSize = 27;
@@ -50,11 +50,21 @@ function BottomTabNavigator() {
         headerStyle: {
           backgroundColor: '#F5F5F5',
         },
+        ...(route.name === 'Home' && {
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+              <Image
+                source={require('../assets/user.png')}
+                style={{ width: 22, height: 22, marginRight: 15 }}
+              />
+            </TouchableOpacity>
+          ),
+        }),
       })}
     >
-      <Tab.Screen name="Home" component={TopTabNavigator} />
-      <Tab.Screen name="Umbrellas" component={TopTabNavigator} />
-      <Tab.Screen name="History" component={TopTabNavigator} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} />
+      <Tab.Screen name="Umbrellas" component={UmbrellasScreen} />
+      <Tab.Screen name="History" component={HistoryScreen} />
     </Tab.Navigator>
   );
 }
