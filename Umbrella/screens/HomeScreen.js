@@ -1,9 +1,10 @@
-import React from "react";
-import { View, Text, Button } from "react-native";
+import React from 'react';
+import { View, Text } from 'react-native';
+import { gStyles } from '../styles/style';
 
 function HomeScreen({ navigation }) {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View style={gStyles.main}>
       <Text>Choose a building</Text>
     </View>
   );
