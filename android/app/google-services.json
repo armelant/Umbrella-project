@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "965999312176",
+    "project_id": "umbrella-project-72a32",
+    "storage_bucket": "umbrella-project-72a32.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965999312176:android:c828c817576e06d88a9cf5",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcqvvXt8BRjkzVUyAqg266y4rFJgViOqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965999312176:android:3b837a4e576ee84f8a9cf5",
+        "android_client_info": {
+          "package_name": "com.rentinghistory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcqvvXt8BRjkzVUyAqg266y4rFJgViOqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
