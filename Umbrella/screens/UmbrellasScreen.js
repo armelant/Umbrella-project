@@ -1,49 +1,123 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const UmbrellasScreen = ({ route }) => {
+const UmbrellasScreen = ({ route, navigation }) => {
   const { buildingId } = route.params;
   const [umbrellas, setUmbrellas] = useState([]);
+  const [buildingName, setBuildingName] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUmbrellas = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/buildings/${buildingId}/umbrellas`
-        );
-        setUmbrellas(response.data);
-      } catch (error) {
-        Alert.alert('Error', 'Failed to load umbrellas');
-      }
-    };
-    fetchUmbrellas();
-  }, [buildingId]);
-
-  const rentUmbrella = async (umbrellaId) => {
-    const userId = await AsyncStorage.getItem('userId');
+  const fetchUmbrellas = async () => {
     try {
-      await axios.post('http://localhost:3000/rent-umbrella', {
-        userId,
-        umbrellaId,
-      });
-      Alert.alert('Success', 'Umbrella rented successfully');
+      const response = await axios.get(`http://192.168.56.1:3000/buildings/${buildingId}/umbrellas`);
+      setBuildingName(response.data.buildingName); 
+      setUmbrellas(response.data.umbrellas);
+      setLoading(false);
     } catch (error) {
-      Alert.alert('Error', 'Failed to rent umbrella');
+      console.log('Error fetching umbrellas:', error);
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchUmbrellas();
+
+    const intervalId = setInterval(() => {
+      fetchUmbrellas();
+    }, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [buildingId]);
+
+  const handleRentUmbrella = async (umbrellaId) => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) {
+        Alert.alert('Error', 'User ID not found in storage');
+        return;
+      }
+  
+      const response = await axios.post('http://192.168.56.1:3000/rent-umbrella', {
+        userId,
+        umbrellaId,
+      });
+  
+      if (response.status === 200) {
+        const rentalId = response.data.rentalId; // Get rentalId from the response
+        await AsyncStorage.setItem('rentalId', rentalId); // Store rentalId in AsyncStorage
+  
+        Alert.alert('Rental Success', 'Umbrella rented successfully', [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('ActiveRental', { rentalId, umbrellaId }),
+          },
+        ]);
+      }
+    } catch (error) {
+      console.log('Error renting umbrella:', error);
+      Alert.alert('Error', 'Failed to rent umbrella. Please try again.');
+    }
+  };
+  
+
+  const confirmRentUmbrella = (umbrellaId) => {
+    Alert.alert(
+      'Confirm Rental',
+      `Do you want to rent this umbrella (ID: ${umbrellaId})?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Rent', onPress: () => handleRentUmbrella(umbrellaId) },
+      ]
+    );
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   return (
-    <View style={{ padding: 20 }}>
+    <View style={styles.container}>
+      <Text style={styles.title}>Available umbrellas in {buildingName}</Text>
       {umbrellas.map((umbrella) => (
-        <View key={umbrella.umbrella_id} style={{ marginBottom: 10 }}>
-          <Text>Umbrella ID: {umbrella.umbrella_id}</Text>
-          <Button title="Rent Umbrella" onPress={() => rentUmbrella(umbrella.umbrella_id)} />
-        </View>
+        <TouchableOpacity
+          key={umbrella.umbrella_id}
+          style={styles.umbrellaButton}
+          onPress={() => confirmRentUmbrella(umbrella.umbrella_id)}
+        >
+          <Text style={styles.buttonText}>{umbrella.umbrella_id}</Text>
+        </TouchableOpacity>
       ))}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  umbrellaButton: {
+    padding: 15,
+    backgroundColor: '#007bff',
+    borderRadius: 5,
+    marginBottom: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+});
 
 export default UmbrellasScreen;

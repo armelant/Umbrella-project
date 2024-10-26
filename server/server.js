@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const { check, validationResult } = require('express-validator');
-const User = require('./models/User'); // Модель пользователя
+const User = require('./models/User'); 
+const Building = require('./models/Building'); 
+const Umbrella = require('./models/Umbrella');
+const RentalHistory = require('./models/RentalHistory');
 require('dotenv').config();
 
 const app = express();
@@ -21,7 +24,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Регистрация пользователя
+
 app.post(
   '/register',
   [
@@ -55,10 +58,8 @@ app.post(
         isVerified: false,
       });
 
-      // Генерация кода подтверждения
-      const confirmationCode = Math.floor(100000 + Math.random() * 900000).toString(); // 6-значный код
+      const confirmationCode = Math.floor(100000 + Math.random() * 900000).toString(); 
 
-      // Сохранение кода подтверждения в базе
       user.confirmationCode = confirmationCode;
       await user.save();
 
@@ -98,11 +99,11 @@ app.post('/verify-email', async (req, res) => {
     }
 
     user.isVerified = true;
-    user.confirmationCode = null; // Удаляем код подтверждения после успешной верификации
-    await user.save(); // Сохраняем обновленного пользователя
+    user.confirmationCode = null; 
+    await user.save(); 
     console.log(`User ${email} successfully verified`);
 
-    res.status(200).json({ msg: 'Email verified successfully' });
+    res.status(200).json({ msg: 'Email verified successfully', userId: user._id});
   } catch (err) {
     console.error('Error during email verification:', err);
     return res.status(500).json({ msg: 'Server error' });
@@ -126,8 +127,12 @@ app.get('/buildings', async (req, res) => {
 app.get('/buildings/:buildingId/umbrellas', async (req, res) => {
   try {
     const { buildingId } = req.params;
+    const building = await Building.findOne({building_id: buildingId});
+    if (!building) {
+      return res.status(404).json({ msg: 'Building not found' });
+    }
     const umbrellas = await Umbrella.find({ building_id: buildingId, status: 'available' });
-    res.json(umbrellas);
+    res.json({buildingName: building.name, umbrellas});
   } catch (error) {
     console.error('Error fetching umbrellas:', error.message);
     res.status(500).json({ msg: 'Server error' });
@@ -145,18 +150,19 @@ app.post('/rent-umbrella', async (req, res) => {
     }
 
     umbrella.status = 'rented';
-    umbrella.sensor_id = null; 
-    umbrella.building_id = null; 
+    umbrella.sensor_id = null;
+    umbrella.building_id = null;
     await umbrella.save();
 
     const rentalHistory = new RentalHistory({
       user_id: userId,
       umbrella_id: umbrellaId,
+      status: 'active', 
       rented_at: new Date(),
     });
     await rentalHistory.save();
 
-    res.status(200).json({ msg: 'Umbrella rented successfully' });
+    res.status(200).json({ msg: 'Umbrella rented successfully', rentalId: rentalHistory._id });
   } catch (error) {
     console.error('Error renting umbrella:', error.message);
     res.status(500).json({ msg: 'Server error' });
@@ -164,16 +170,20 @@ app.post('/rent-umbrella', async (req, res) => {
 });
 
 
+
 app.post('/end-rental', async (req, res) => {
   const { rentalId } = req.body;
+  console.log(`Received rentalId: ${rentalId}`); // Log rentalId to confirm it's being sent correctly
 
   try {
     const rentalHistory = await RentalHistory.findById(rentalId);
     if (!rentalHistory) {
-      return res.status(400).json({ msg: 'Rental history not found' });
+      console.log(`Rental history not found for ID: ${rentalId}`);
+      return res.status(404).json({ msg: 'Rental history not found' });
     }
 
     rentalHistory.returned_at = new Date();
+    rentalHistory.status = 'finished';
     await rentalHistory.save();
 
     res.status(200).json({ msg: 'Rental ended successfully' });
@@ -182,6 +192,8 @@ app.post('/end-rental', async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 });
+
+
 
 
 const PORT = process.env.PORT || 3000;

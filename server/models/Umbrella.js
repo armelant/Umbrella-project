@@ -5,8 +5,7 @@ const UmbrellaSchema = new mongoose.Schema({
   building_id: String,
   status: {
     type: String,
-    enum: ['available', 'rented'],
-    default: 'available',
+    enum: ['available', 'rented']
   },
   sensor_id: String,
 });

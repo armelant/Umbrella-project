@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native'; 
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 const VerifyEmailScreen = ({ route }) => {
   const email = route?.params?.email; 
@@ -22,16 +23,12 @@ const VerifyEmailScreen = ({ route }) => {
         confirmationCode, 
       });
 
-      Alert.alert(
-        'Success',
-        response.data.msg,
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Home'),
-          },
-        ]
-      );
+      const userId = response.data.userId;
+
+      await AsyncStorage.setItem('userId', userId);
+
+      Alert.alert('Success', response.data.msg);
+      navigation.navigate('Home');
     } catch (error) {
       console.log(error);
       Alert.alert('Error', error.response?.data?.msg || 'Verification failed');

@@ -1,20 +1,51 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
+  const [buildings, setBuildings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+
+  const fetchBuildings = async () => {
+    try {
+      const response = await fetch('http://192.168.56.1:3000/buildings');
+      const data = await response.json();
+      setBuildings(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching buildings:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBuildings();
+
+    const intervalId = setInterval(fetchBuildings, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.userButton} 
-        onPress={() => navigation.navigate('UserScreen')}
-      >
-        <Text style={styles.buttonText}>User</Text>
-      </TouchableOpacity>
-      <Text style={styles.text}>Main Screen</Text>
-      <Button title="Rent Umbrella" onPress={() => navigation.navigate('UmbrellasScreen')} />
+      <Text style={styles.headerText}>Select a Building</Text>
+      <FlatList
+        data={buildings}
+        keyExtractor={(item) => item.building_id}
+        renderItem={({ item }) => (
+          <TouchableOpacity 
+            style={styles.buildingButton} 
+            onPress={() => navigation.navigate('UmbrellasScreen', { buildingId: item.building_id })}
+          >
+            <Text style={styles.buttonText}>{item.name || `Building ${item.building_id}`}</Text>
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 };
@@ -22,23 +53,25 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  text: {
-    fontSize: 20,
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
-  userButton: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    padding: 10,
+  buildingButton: {
     backgroundColor: '#007bff',
+    padding: 15,
     borderRadius: 5,
+    marginBottom: 10,
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
+    textAlign: 'center',
   },
 });
 

@@ -5,6 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import RegisterScreen from './screens/RegisterScreen';
 import VerifyEmailScreen from './screens/VerifyEmailScreen';
 import HomeScreen from './screens/HomeScreen';
+import UmbrellasScreen from './screens/UmbrellasScreen';
+import ActiveRentalScreen from './screens/ActiveRentalScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,11 +27,16 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
         {isLoggedIn ? (
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="UmbrellasScreen" component={UmbrellasScreen} />
+            <Stack.Screen name="ActiveRental" component={ActiveRentalScreen} />
+          </>
         ) : (
           <>
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+            <Stack.Screen name="Home" component={HomeScreen} />
           </>
         )}
       </Stack.Navigator>
