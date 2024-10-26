@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 import React, { useState } from 'react';
-import { gStyles } from '../styles/style';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +19,7 @@ const LoginScreen = () => {
     navigation.goBack();
   };
   const handleSignup = () => {
-    navigation.navigate('SIGNUP');
+    navigation.navigate('Signup');
   };
 
   return (
