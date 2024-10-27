@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const { check, validationResult } = require('express-validator');
-const User = require('./models/User'); 
-const Building = require('./models/Building'); 
+const User = require('./models/User');
+const Building = require('./models/Building');
 const Umbrella = require('./models/Umbrella');
 const RentalHistory = require('./models/RentalHistory');
 require('dotenv').config();
@@ -12,9 +12,10 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
+mongoose
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch(err => console.error('Error connecting to MongoDB:', err));
+  .catch((err) => console.error('Error connecting to MongoDB:', err));
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -23,7 +24,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
-
 
 app.post(
   '/register',
@@ -40,7 +40,9 @@ app.post(
     const { email, password } = req.body;
 
     if (!email.endsWith('@student.hamk.fi')) {
-      return res.status(400).json({ message: 'Email must end with @student.hamk.fi' });
+      return res
+        .status(400)
+        .json({ message: 'Email must end with @student.hamk.fi' });
     }
 
     try {
@@ -58,7 +60,9 @@ app.post(
         isVerified: false,
       });
 
-      const confirmationCode = Math.floor(100000 + Math.random() * 900000).toString(); 
+      const confirmationCode = Math.floor(
+        100000 + Math.random() * 900000
+      ).toString();
 
       user.confirmationCode = confirmationCode;
       await user.save();
@@ -72,7 +76,9 @@ app.post(
 
       transporter.sendMail(mailOptions, (error) => {
         if (error) {
-          return res.status(500).json({ msg: 'Error sending verification email' });
+          return res
+            .status(500)
+            .json({ msg: 'Error sending verification email' });
         }
         res.status(200).json({ msg: 'Verification email sent' });
       });
@@ -90,29 +96,39 @@ app.post('/verify-email', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       console.error(`User with email ${email} not found`);
-      return res.status(400).json({ msg: 'User not found. Please ensure you have registered with this email.' });
+      return res
+        .status(400)
+        .json({
+          msg: 'User not found. Please ensure you have registered with this email.',
+        });
     }
 
     if (user.confirmationCode !== confirmationCode) {
-      console.error(`Invalid confirmation code for user ${email}. Expected ${user.confirmationCode}, received ${confirmationCode}`);
-      return res.status(400).json({ msg: 'Invalid confirmation code. Please check your email for the correct code.' });
+      console.error(
+        `Invalid confirmation code for user ${email}. Expected ${user.confirmationCode}, received ${confirmationCode}`
+      );
+      return res
+        .status(400)
+        .json({
+          msg: 'Invalid confirmation code. Please check your email for the correct code.',
+        });
     }
 
     user.isVerified = true;
-    user.confirmationCode = null; 
-    await user.save(); 
+    user.confirmationCode = null;
+    await user.save();
     console.log(`User ${email} successfully verified`);
 
-    res.status(200).json({ msg: 'Email verified successfully', userId: user._id});
+    res
+      .status(200)
+      .json({ msg: 'Email verified successfully', userId: user._id });
   } catch (err) {
     console.error('Error during email verification:', err);
     return res.status(500).json({ msg: 'Server error' });
   }
 });
 
-
-
-
+// login
 
 app.get('/buildings', async (req, res) => {
   try {
@@ -127,18 +143,20 @@ app.get('/buildings', async (req, res) => {
 app.get('/buildings/:buildingId/umbrellas', async (req, res) => {
   try {
     const { buildingId } = req.params;
-    const building = await Building.findOne({building_id: buildingId});
+    const building = await Building.findOne({ building_id: buildingId });
     if (!building) {
       return res.status(404).json({ msg: 'Building not found' });
     }
-    const umbrellas = await Umbrella.find({ building_id: buildingId, status: 'available' });
-    res.json({buildingName: building.name, umbrellas});
+    const umbrellas = await Umbrella.find({
+      building_id: buildingId,
+      status: 'available',
+    });
+    res.json({ buildingName: building.name, umbrellas });
   } catch (error) {
     console.error('Error fetching umbrellas:', error.message);
     res.status(500).json({ msg: 'Server error' });
   }
 });
-
 
 app.post('/rent-umbrella', async (req, res) => {
   const { userId, umbrellaId } = req.body;
@@ -157,19 +175,22 @@ app.post('/rent-umbrella', async (req, res) => {
     const rentalHistory = new RentalHistory({
       user_id: userId,
       umbrella_id: umbrellaId,
-      status: 'active', 
+      status: 'active',
       rented_at: new Date(),
     });
     await rentalHistory.save();
 
-    res.status(200).json({ msg: 'Umbrella rented successfully', rentalId: rentalHistory._id });
+    res
+      .status(200)
+      .json({
+        msg: 'Umbrella rented successfully',
+        rentalId: rentalHistory._id,
+      });
   } catch (error) {
     console.error('Error renting umbrella:', error.message);
     res.status(500).json({ msg: 'Server error' });
   }
 });
-
-
 
 app.post('/end-rental', async (req, res) => {
   const { rentalId } = req.body;
@@ -192,9 +213,6 @@ app.post('/end-rental', async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 });
-
-
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
