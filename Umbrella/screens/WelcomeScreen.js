@@ -1,50 +1,40 @@
-import {
-  StyleSheet,
-  Image,
-  Text,
-  View,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
 import React from 'react';
-import { gStyles } from '../styles/style';
+import { StyleSheet, View, Text } from 'react-native';
+import { Video } from 'expo-av';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
-  const handleLogin = () => {
-    navigation.navigate('Login');
-  };
-  const handleSignup = () => {
-    navigation.navigate('Signup');
-  };
+  const video = React.useRef(null);
   return (
-    <View style={gStyles}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.appName}>RainMate</Text>
-        <Image source={require('../assets/umbrella.png')} style={styles.logo} />
+    <View style={styles.container}>
+      {/* Video player */}
+      <Video
+        ref={video}
+        style={styles.video}
+        source={require('../assets/HAMK-animaatio-short-cut_2.mp4')}
+        resizeMode="cover"
+        shouldPlay
+        isLooping
+      />
+      {/* Text */}
+      <View style={styles.overlay}>
+        <Text style={styles.text}>Welcome to Umbrella!</Text>
       </View>
-      <Image source={require('../assets/image.png')} style={styles.banner} />
-      <Text style={styles.tagline}>
-        Stay Dry, Stay Prepared – Anytime with RainMate!
-      </Text>
-      <Text style={styles.description}>
-        RainMate is a convenient umbrella rental service designed for university
-        students. The app allows users to quickly check umbrella availability on
-        campus and rent one with just a tap. Integrated with school accounts for
-        secure access, RainMate sends helpful reminders to return umbrellas on
-        time. Whether it’s a drizzle or a downpour, RainMate ensures you’re
-        ready for any rainy day!
-      </Text>
-      <View style={styles.buttonContainer}>
+      {/* Buttons */}
+      <View style={styles.buttons}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#D9D9D9' }]}
-          onPress={handleLogin}
+          style={styles.button}
+          onPress={() => navigation.navigate('Register')}
         >
-          <Text style={styles.loginButtonText}>Login</Text>
+          <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button]} onPress={handleSignup}>
-          <Text style={styles.singUpButtonText}>Sign-up</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -53,69 +43,52 @@ const WelcomeScreen = () => {
 
 export default WelcomeScreen;
 
-const { width } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  container: {
+    flex: 1,
     justifyContent: 'center',
-    marginTop: 30,
   },
-  logo: {
-    width: 30,
-    height: 30,
-    marginLeft: 20,
-    marginRight: 10,
+  video: {
+    width: '100%',
+    height: '100%',
   },
-  appName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: 10,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    // backgroundColor: 'rgba(0, 0, 0, 0.0)',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingTop: '25%',
   },
-  banner: {
-    width: width,
-    height: 250,
-    esizeMode: 'cover',
-    marginVertical: 10,
+  text: {
+    color: 'white',
+    fontSize: 24,
   },
-  tagline: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginVertical: 10,
-    textAlign: 'center',
-  },
-  description: {
-    textAlign: 'center',
-    marginHorizontal: 20,
-    fontSize: 14,
-    marginVertical: 10,
-  },
-  buttonContainer: {
+  buttons: {
     flexDirection: 'row',
-    borderWidth: 2,
-    borderColor: '#D9D9D9',
-    width: '70%',
-    alignSelf: 'center',
-    marginTop: 20,
-    height: 50,
-    borderRadius: 100,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 30,
+    left: 0,
+    right: 0,
   },
   button: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '55%',
-    borderRadius: 100,
+    backgroundColor: 'white',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    width: 100,
+    // Shadow for Android
+    elevation: 3,
+    // Shadow for iOS
+    shadowColor: '#000', // Shadow color (usually black)
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset; {width: 0, height: 2} positions the shadow below the element
+    shadowOpacity: 0.3, // Shadow opacity (0 to 1); 0.3 makes it 30% opaque
+    shadowRadius: 3.84, // Shadow blur radius, controls the shadow's spread and size
   },
-  loginButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+  buttonText: {
+    color: 'black',
     fontSize: 16,
-  },
-  singUpButtonText: {
-    color: '#000',
-    fontWeight: '600',
-    fontSize: 16,
-    marginRight: 25,
+    textAlign: 'center',
   },
 });
