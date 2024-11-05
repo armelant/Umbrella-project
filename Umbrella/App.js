@@ -2,39 +2,64 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ActiveRentalsScreen from './screens/ActiveRentalsScreen.js';
-import ProfileScreen from './screens/ProfileScreen.js';
-import HomeScreen from './screens/HomeScreen.js';
-import UmbrellasScreen from './screens/UmbrellasScreen.js';
-import VerifyEmailScreen from './screens/VerifyEmailScreen.js';
-import BottomTabNavigator from './navigation/BottomTabNavigator.js';
-import WelcomeScreen from './screens/WelcomeScreen.js';
-import LoginScreen from './screens/LoginScreen.js';
-import SingupScreen from './screens/SignupScreen.js';
+import RegisterScreen from './screens/RegisterScreen';
+import VerifyEmailScreen from './screens/VerifyEmailScreen';
+import HomeScreen from './screens/HomeScreen';
+import UmbrellasScreen from './screens/UmbrellasScreen';
+import ActiveRentalScreen from './screens/ActiveRentalScreen';
+import WelcomeScreen from './screens/WelcomeScreen';
+import LoginScreen from './screens/LoginScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 
-export default function App() {
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const userId = await AsyncStorage.getItem('userId');
+      if (userId) {
+        setIsLoggedIn(true);
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator>
         <Stack.Screen
           name="Welcome"
           component={WelcomeScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Signup"
-          component={SingupScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Main" component={BottomTabNavigator} />
+        {isLoggedIn ? (
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="UmbrellasScreen" component={UmbrellasScreen} />
+            <Stack.Screen name="ActiveRental" component={ActiveRentalScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+            <Stack.Screen name="Home" component={HomeScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
+
+export default App;
