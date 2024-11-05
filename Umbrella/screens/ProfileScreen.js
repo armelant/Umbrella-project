@@ -1,78 +1,66 @@
 import React from 'react';
-import { View, Text, Button, TextInput, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { gStyles } from '../styles/style';
-import { registerUser, loginUser } from '../api';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 
-function ProfileScreen({ navigation }) {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [fullName, setFullName] = React.useState('');
-  const [isLoginMode, setIsLoginMode] = React.useState(true);
+export default function Profile() {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
 
-  const handleSubmit = async () => {
-    try {
-      if (isLoginMode) {
-        const data = await loginUser({ email, password });
-        console.log('Login Success:', data);
-        await AsyncStorage.setItem('token', data.token);
-        navigation.navigate('Home');
-      } else {
-        const data = await registerUser({ email, password, fullName });
-        console.log('Registration Success:', data);
-        await AsyncStorage.setItem('token', data.token);
-        navigation.navigate('Home');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      Alert.alert(
-        'Error',
-        error.response?.data?.message || 'An error occurred.'
-      );
-    }
+  const handleLogout = () => {
+    dispatch(logoutAction());
+    navigation.navigate('/Login');
   };
 
   return (
-    <View style={gStyles.main}>
-      <Text style={gStyles.title}>{isLoginMode ? 'Login' : 'Register'}</Text>
-
-      {!isLoginMode && (
-        <TextInput
-          style={gStyles.input}
-          placeholder="Full Name"
-          value={fullName}
-          onChangeText={setFullName}
-        />
-      )}
-
-      <TextInput
-        style={gStyles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        required
-      />
-      <TextInput
-        style={gStyles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        required
-      />
-
-      <Button
-        title={isLoginMode ? 'Login' : 'Register'}
-        onPress={handleSubmit}
-      />
-      <Button
-        title={`Switch to ${isLoginMode ? 'Register' : 'Login'}`}
-        onPress={() => setIsLoginMode(!isLoginMode)}
-      />
-    </View>
+    <ProtectedRoute>
+      <View style={styles.container}>
+        <Text style={styles.title}>User Profile</Text>
+        {user ? (
+          <>
+            <Text style={styles.text}>Email: {user.email}</Text>
+            <TouchableOpacity style={styles.button} onPress={handleLogout}>
+              <Text style={styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text style={styles.text}>No user logged in</Text>
+        )}
+      </View>
+    </ProtectedRoute>
   );
 }
 
-export default ProfileScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  text: {
+    fontSize: 18,
+    marginBottom: 16,
+  },
+  button: {
+    height: 50,
+    backgroundColor: '#6200ea',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    marginTop: 16,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
