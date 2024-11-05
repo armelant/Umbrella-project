@@ -34,6 +34,7 @@ app.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -96,22 +97,18 @@ app.post('/verify-email', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       console.error(`User with email ${email} not found`);
-      return res
-        .status(400)
-        .json({
-          msg: 'User not found. Please ensure you have registered with this email.',
-        });
+      return res.status(400).json({
+        msg: 'User not found. Please ensure you have registered with this email.',
+      });
     }
 
     if (user.confirmationCode !== confirmationCode) {
       console.error(
         `Invalid confirmation code for user ${email}. Expected ${user.confirmationCode}, received ${confirmationCode}`
       );
-      return res
-        .status(400)
-        .json({
-          msg: 'Invalid confirmation code. Please check your email for the correct code.',
-        });
+      return res.status(400).json({
+        msg: 'Invalid confirmation code. Please check your email for the correct code.',
+      });
     }
 
     user.isVerified = true;
@@ -129,6 +126,26 @@ app.post('/verify-email', async (req, res) => {
 });
 
 // login
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    res.status(200).json({ msg: 'Login successful', userId: user._id });
+  } catch (err) {
+    console.error('Error during login:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 app.get('/buildings', async (req, res) => {
   try {
@@ -180,12 +197,10 @@ app.post('/rent-umbrella', async (req, res) => {
     });
     await rentalHistory.save();
 
-    res
-      .status(200)
-      .json({
-        msg: 'Umbrella rented successfully',
-        rentalId: rentalHistory._id,
-      });
+    res.status(200).json({
+      msg: 'Umbrella rented successfully',
+      rentalId: rentalHistory._id,
+    });
   } catch (error) {
     console.error('Error renting umbrella:', error.message);
     res.status(500).json({ msg: 'Server error' });
