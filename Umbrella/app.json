@@ -2,7 +2,6 @@
   "expo": {
     "name": "Umbrella",
     "slug": "Umbrella",
-    "scheme": "Umbrella",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/umbrella.png",
