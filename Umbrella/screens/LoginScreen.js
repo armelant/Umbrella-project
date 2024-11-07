@@ -234,7 +234,7 @@ const LoginScreen = () => {
       {/* Formik */}
       <Formik
         initialValues={{
-          email: 'Andrei@student.hamk.fi',
+          email: 'Vit@student.hamk.fi',
           password: '123456789',
         }}
         onSubmit={(values) => {

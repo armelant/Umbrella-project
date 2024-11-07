@@ -125,28 +125,61 @@ app.post('/verify-email', async (req, res) => {
   }
 });
 
-// login
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+app.post(
+  '/login',
+  [
+    check('email', 'Invalid email format').isEmail(),
+    check('password', 'Password must be at least 5 characters').isLength({
+      min: 5,
+    }),
+  ],
 
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
+    const { email, password } = req.body;
 
-    res.status(200).json({ msg: 'Login successful', userId: user._id });
-  } catch (err) {
-    console.error('Error during login:', err);
-    res.status(500).json({ message: 'Server error' });
+    try {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(404).json({
+          message: 'User not found',
+        });
+      }
+
+      if (!user.isVerified) {
+        return res.status(403).json({
+          message: 'Email not verified. Please verify your email first.',
+        });
+      }
+
+      const isValidPass = await bcrypt.compare(password, user.password);
+      if (!isValidPass) {
+        return res.status(400).json({
+          message: 'Incorrect email or password',
+        });
+      }
+
+      const { password: hashedPassword, ...userData } = user.toObject();
+
+      res.json({
+        ...userData,
+        message: 'Login successful',
+      });
+    } catch (err) {
+      console.error('Error in login:', err);
+      res.status(500).json({
+        message: 'Server error during login',
+      });
+    }
   }
-});
+);
 
+// login end
 app.get('/buildings', async (req, res) => {
   try {
     const buildings = await Building.find({});
@@ -209,7 +242,7 @@ app.post('/rent-umbrella', async (req, res) => {
 
 app.post('/end-rental', async (req, res) => {
   const { rentalId } = req.body;
-  console.log(`Received rentalId: ${rentalId}`); // Log rentalId to confirm it's being sent correctly
+  console.log(`Received rentalId: ${rentalId}`);
 
   try {
     const rentalHistory = await RentalHistory.findById(rentalId);
