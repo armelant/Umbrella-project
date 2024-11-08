@@ -1,37 +1,36 @@
+// ProfileScreen.js
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { logout } from '../reducers/authReducer';
 
-export default function Profile() {
+export default function ProfileScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
   const handleLogout = () => {
-    dispatch(logoutAction());
-    navigation.navigate('/Login');
+    dispatch(logout());
+    navigation.navigate('Login');
   };
 
   return (
-    <ProtectedRoute>
-      <View style={styles.container}>
-        <Text style={styles.title}>User Profile</Text>
-        {user ? (
-          <>
-            <Text style={styles.text}>Email: {user.email}</Text>
-            <TouchableOpacity style={styles.button} onPress={handleLogout}>
-              <Text style={styles.buttonText}>Logout</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <Text style={styles.text}>No user logged in</Text>
-        )}
-      </View>
-    </ProtectedRoute>
+    <View style={styles.container}>
+      <Text style={styles.title}>User Profile</Text>
+      {user ? (
+        <>
+          <Text style={styles.text}>Email: {user.email}</Text>
+          <TouchableOpacity style={styles.button} onPress={handleLogout}>
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <Text style={styles.text}>No user logged in</Text>
+      )}
+    </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
