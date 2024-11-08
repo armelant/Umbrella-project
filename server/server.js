@@ -30,6 +30,8 @@ app.post(
   [
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Password is required').isLength({ min: 6 }),
+    check('firstName', 'First name is required').not().isEmpty(),
+    check('lastName', 'Last name is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -38,7 +40,7 @@ app.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { email, password, firstName, lastName } = req.body;
 
     if (!email.endsWith('@student.hamk.fi')) {
       return res
@@ -58,6 +60,8 @@ app.post(
       user = new User({
         email,
         password: hashedPassword,
+        firstName,
+        lastName,
         isVerified: false,
       });
 

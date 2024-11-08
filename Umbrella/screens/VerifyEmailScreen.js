@@ -39,7 +39,7 @@ const VerifyEmailScreen = ({ route }) => {
       await AsyncStorage.setItem('userId', userId);
 
       Alert.alert('Success', response.data.msg);
-      navigation.navigate('Home');
+      navigation.navigate('Login');
     } catch (error) {
       console.log(error);
       Alert.alert('Error', error.response?.data?.msg || 'Verification failed');

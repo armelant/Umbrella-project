@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
   Alert,
   TouchableOpacity,
@@ -14,6 +13,8 @@ import { useNavigation } from '@react-navigation/native';
 const RegisterScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const navigation = useNavigation();
 
   const register = async () => {
@@ -21,6 +22,8 @@ const RegisterScreen = () => {
       const response = await axios.post('http://192.168.1.141:3000/register', {
         email,
         password,
+        firstName,
+        lastName,
       });
 
       Alert.alert('Success', response.data.msg);
@@ -37,6 +40,18 @@ const RegisterScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="First Name"
+        value={firstName}
+        onChangeText={setFirstName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Last Name"
+        value={lastName}
+        onChangeText={setLastName}
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"
