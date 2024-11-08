@@ -106,17 +106,41 @@ const App = () => {
             options={{ headerShown: false }}
             initialParams={{ isLoggedIn }}
           />
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="UmbrellasScreen" component={UmbrellasScreen} />
-          <Stack.Screen name="ActiveRental" component={ActiveRentalScreen} />
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="UmbrellasScreen"
+            component={UmbrellasScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ActiveRental"
+            component={ActiveRentalScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="Profile"
             component={ProfileScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="VerifyEmail"
+            component={VerifyEmailScreen}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
