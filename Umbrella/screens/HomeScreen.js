@@ -126,9 +126,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileIcon: {
-    width: 24,
-    height: 24,
-    marginLeft: 10,
+    width: 28,
+    height: 28,
   },
   buildingButton: {
     height: 50,
