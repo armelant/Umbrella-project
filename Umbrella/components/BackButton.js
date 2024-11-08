@@ -29,8 +29,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 30, // Сделаем кнопку немного меньше
+    height: 30,
     width: 30,
+    zIndex: 10,
+    elevation: 10,
   },
 });
 
