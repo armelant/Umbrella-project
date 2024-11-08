@@ -109,7 +109,11 @@ const App = () => {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="UmbrellasScreen" component={UmbrellasScreen} />
           <Stack.Screen name="ActiveRental" component={ActiveRentalScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />

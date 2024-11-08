@@ -13,6 +13,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../reducers/authReducer';
 import { useNavigation } from '@react-navigation/native';
+import BackButton from '../components/BackButton';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+      <BackButton />
       <ScrollView>
         <View style={styles.container}>
           {/* User profile */}
@@ -174,6 +176,7 @@ const styles = StyleSheet.create({
   /** Profile */
   profile: {
     padding: 16,
+    marginTop: 30,
     alignItems: 'center',
     backgroundColor: '#fff',
     borderBottomWidth: 1,
