@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from '../components/BackButton';
 
 const UmbrellasScreen = ({ route, navigation }) => {
   const { buildingId } = route.params;
@@ -95,6 +96,7 @@ const UmbrellasScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <Text style={styles.title}>Available umbrellas in {buildingName}</Text>
       {umbrellas.length > 0 ? (
         umbrellas.map((umbrella) => (

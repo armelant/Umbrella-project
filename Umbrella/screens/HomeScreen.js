@@ -7,8 +7,11 @@ import {
   ActivityIndicator,
   StyleSheet,
   Image,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import BackButton from '../components/BackButton';
+import ProfileButton from '../components/ProfileButton';
 
 const HomeScreen = () => {
   const [buildings, setBuildings] = useState([]);
@@ -39,66 +42,35 @@ const HomeScreen = () => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  //   return (
-  //     <View style={styles.container}>
-  //       <Text style={styles.headerText}>Select a Building</Text>
-  //       <FlatList
-  //         data={buildings}
-  //         keyExtractor={(item) => item.building_id}
-  //         renderItem={({ item }) => (
-  //           <TouchableOpacity
-  //             style={styles.buildingButton}
-  //             onPress={() =>
-  //               navigation.navigate('UmbrellasScreen', {
-  //                 buildingId: item.building_id,
-  //               })
-  //             }
-  //           >
-  //             <Text style={styles.buttonText}>
-  //               {item.name || `Building ${item.building_id}`}
-  //             </Text>
-  //           </TouchableOpacity>
-  //         )}
-  //       />
-  //       <Button
-  //         title="Profile"
-  //         onPress={() => navigation.navigate('Profile')}
-  //         color="#007bff"
-  //       />
-  //     </View>
-  //   );
-  // };
-
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Select a Building</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Image
-            source={require('../assets/user.png')}
-            style={styles.profileIcon}
-          />
-        </TouchableOpacity>
+    <ScrollView>
+      <View style={styles.container}>
+        <BackButton />
+
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Select a Building</Text>
+        </View>
+        <ProfileButton />
+        <FlatList
+          data={buildings}
+          keyExtractor={(item) => item.building_id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.buildingButton}
+              onPress={() =>
+                navigation.navigate('UmbrellasScreen', {
+                  buildingId: item.building_id,
+                })
+              }
+            >
+              <Text style={styles.buttonText}>
+                {item.name || `Building ${item.building_id}`}
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
       </View>
-      <FlatList
-        data={buildings}
-        keyExtractor={(item) => item.building_id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.buildingButton}
-            onPress={() =>
-              navigation.navigate('UmbrellasScreen', {
-                buildingId: item.building_id,
-              })
-            }
-          >
-            <Text style={styles.buttonText}>
-              {item.name || `Building ${item.building_id}`}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -110,24 +82,15 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginBottom: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    marginTop: 60,
   },
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     flex: 1,
-  },
-  profileIcon: {
-    width: 28,
-    height: 28,
   },
   buildingButton: {
     height: 50,
