@@ -21,6 +21,7 @@ const UmbrellasScreen = ({ route, navigation }) => {
       const response = await axios.get(
         `http://192.168.1.141:3000/buildings/${buildingId}/umbrellas`
       );
+      console.log('Fetched umbrellas:', response.data);
       setBuildingName(response.data.buildingName);
       setUmbrellas(response.data.umbrellas);
       setLoading(false);
@@ -69,6 +70,7 @@ const UmbrellasScreen = ({ route, navigation }) => {
               navigation.navigate('ActiveRental', { rentalId, umbrellaId }),
           },
         ]);
+        fetchUmbrellas();
       }
     } catch (error) {
       console.log('Error renting umbrella:', error);
@@ -88,21 +90,27 @@ const UmbrellasScreen = ({ route, navigation }) => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#6200ea" />;
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Available umbrellas in {buildingName}</Text>
-      {umbrellas.map((umbrella) => (
-        <TouchableOpacity
-          key={umbrella.umbrella_id}
-          style={styles.umbrellaButton}
-          onPress={() => confirmRentUmbrella(umbrella.umbrella_id)}
-        >
-          <Text style={styles.buttonText}>{umbrella.umbrella_id}</Text>
-        </TouchableOpacity>
-      ))}
+      {umbrellas.length > 0 ? (
+        umbrellas.map((umbrella) => (
+          <TouchableOpacity
+            key={umbrella.umbrella_id}
+            style={styles.button}
+            onPress={() => confirmRentUmbrella(umbrella.umbrella_id)}
+          >
+            <Text style={styles.buttonText}>
+              Umbrella ID: {umbrella.umbrella_id}
+            </Text>
+          </TouchableOpacity>
+        ))
+      ) : (
+        <Text style={styles.noUmbrellasText}>No available umbrellas</Text>
+      )}
     </View>
   );
 };
@@ -112,23 +120,34 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 24,
-    marginBottom: 20,
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 24,
+    textAlign: 'center',
   },
-  umbrellaButton: {
-    padding: 15,
-    backgroundColor: '#007bff',
-    borderRadius: 5,
-    marginBottom: 10,
-    width: '80%',
+  button: {
+    height: 50,
+    width: '100%',
+    backgroundColor: '#6200ea',
+    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 8,
+    marginTop: 16,
   },
   buttonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  noUmbrellasText: {
+    fontSize: 18,
+    color: 'gray',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 
