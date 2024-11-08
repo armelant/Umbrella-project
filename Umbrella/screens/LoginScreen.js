@@ -7,26 +7,24 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../reducers/authReducer';
 import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const login = async () => {
     try {
-      const response = await axios.post('http://192.168.1.141:3000/login', {
-        email,
-        password,
-      });
+      await dispatch(loginUser(email, password));
 
-      Alert.alert('Success', 'Login successful');
       navigation.navigate('Home');
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', error.response?.data?.message || 'Login failed');
+      Alert.alert('Error', 'Login failed');
     }
   };
 

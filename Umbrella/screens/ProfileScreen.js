@@ -1,13 +1,13 @@
-// ProfileScreen.js
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import { logout } from '../reducers/authReducer';
+import { useNavigation } from '@react-navigation/native';
 
-export default function ProfileScreen() {
-  const navigation = useNavigation();
+const ProfileScreen = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   const user = useSelector((state) => state.auth.user);
 
   const handleLogout = () => {
@@ -21,6 +21,7 @@ export default function ProfileScreen() {
       {user ? (
         <>
           <Text style={styles.text}>Email: {user.email}</Text>
+          <Text style={styles.text}>Name: {user.name}</Text>
           <TouchableOpacity style={styles.button} onPress={handleLogout}>
             <Text style={styles.buttonText}>Logout</Text>
           </TouchableOpacity>
@@ -30,7 +31,8 @@ export default function ProfileScreen() {
       )}
     </View>
   );
-}
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -63,3 +65,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+export default ProfileScreen;
