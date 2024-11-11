@@ -26,7 +26,9 @@ const BuildingsScreen = ({ navigation }) => {
           <Button
             title="View Umbrellas"
             onPress={() =>
-              navigation.navigate('Umbrellas', { buildingId: building.building_id })
+              navigation.navigate('Umbrellas', {
+                buildingId: building.building_id,
+              })
             }
           />
         </View>

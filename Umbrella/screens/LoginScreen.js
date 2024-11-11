@@ -3,55 +3,34 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Alert,
   TouchableOpacity,
+  StyleSheet,
 } from 'react-native';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../reducers/authReducer';
 import { useNavigation } from '@react-navigation/native';
 
-const RegisterScreen = () => {
+const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const register = async () => {
+  const login = async () => {
     try {
-      const response = await axios.post('http://192.168.56.1:3000/register', {
-        email,
-        password,
-        firstName,
-        lastName,
-      });
+      await dispatch(loginUser(email, password));
 
-      Alert.alert('Success', response.data.msg);
-      navigation.navigate('VerifyEmail', { email });
+      navigation.navigate('Home');
     } catch (error) {
       console.error(error);
-      Alert.alert(
-        'Error',
-        error.response?.data?.message || 'Registration failed'
-      );
+      Alert.alert('Error', 'Login failed');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Last Name"
-        value={lastName}
-        onChangeText={setLastName}
-      />
+      <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -65,8 +44,8 @@ const RegisterScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={register}>
-        <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity style={styles.button} onPress={login}>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
     </View>
   );
@@ -111,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterScreen;
+export default LoginScreen;

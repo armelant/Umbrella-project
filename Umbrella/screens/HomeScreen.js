@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet,
+  Image,
+  ScrollView,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import BackButton from '../components/BackButton';
+import ProfileButton from '../components/ProfileButton';
 
 const HomeScreen = () => {
   const [buildings, setBuildings] = useState([]);
@@ -32,21 +43,34 @@ const HomeScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.headerText}>Select a Building</Text>
-      <FlatList
-        data={buildings}
-        keyExtractor={(item) => item.building_id}
-        renderItem={({ item }) => (
-          <TouchableOpacity 
-            style={styles.buildingButton} 
-            onPress={() => navigation.navigate('UmbrellasScreen', { buildingId: item.building_id })}
-          >
-            <Text style={styles.buttonText}>{item.name || `Building ${item.building_id}`}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+        <BackButton />
+
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Select a Building</Text>
+        </View>
+        <ProfileButton />
+        <FlatList
+          data={buildings}
+          keyExtractor={(item) => item.building_id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.buildingButton}
+              onPress={() =>
+                navigation.navigate('UmbrellasScreen', {
+                  buildingId: item.building_id,
+                })
+              }
+            >
+              <Text style={styles.buttonText}>
+                {item.name || `Building ${item.building_id}`}
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
@@ -54,19 +78,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 20,
+    marginTop: 60,
   },
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
+    flex: 1,
   },
   buildingButton: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 5,
-    marginBottom: 10,
+    height: 50,
+    backgroundColor: '#6200ea',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    marginTop: 16,
   },
   buttonText: {
     color: 'white',

@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from '../components/BackButton';
 
 const UmbrellasScreen = ({ route, navigation }) => {
   const { buildingId } = route.params;
@@ -11,8 +19,11 @@ const UmbrellasScreen = ({ route, navigation }) => {
 
   const fetchUmbrellas = async () => {
     try {
-      const response = await axios.get(`http://192.168.56.1:3000/buildings/${buildingId}/umbrellas`);
-      setBuildingName(response.data.buildingName); 
+      const response = await axios.get(
+        `http://192.168.1.141:3000/buildings/${buildingId}/umbrellas`
+      );
+      console.log('Fetched umbrellas:', response.data);
+      setBuildingName(response.data.buildingName);
       setUmbrellas(response.data.umbrellas);
       setLoading(false);
     } catch (error) {
@@ -40,29 +51,32 @@ const UmbrellasScreen = ({ route, navigation }) => {
         Alert.alert('Error', 'User ID not found in storage');
         return;
       }
-  
-      const response = await axios.post('http://192.168.56.1:3000/rent-umbrella', {
-        userId,
-        umbrellaId,
-      });
-  
+      const response = await axios.post(
+        'http://192.168.1.141:3000/rent-umbrella',
+        {
+          userId,
+          umbrellaId,
+        }
+      );
+
       if (response.status === 200) {
         const rentalId = response.data.rentalId; // Get rentalId from the response
         await AsyncStorage.setItem('rentalId', rentalId); // Store rentalId in AsyncStorage
-  
+
         Alert.alert('Rental Success', 'Umbrella rented successfully', [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('ActiveRental', { rentalId, umbrellaId }),
+            onPress: () =>
+              navigation.navigate('ActiveRental', { rentalId, umbrellaId }),
           },
         ]);
+        fetchUmbrellas();
       }
     } catch (error) {
       console.log('Error renting umbrella:', error);
       Alert.alert('Error', 'Failed to rent umbrella. Please try again.');
     }
   };
-  
 
   const confirmRentUmbrella = (umbrellaId) => {
     Alert.alert(
@@ -76,21 +90,28 @@ const UmbrellasScreen = ({ route, navigation }) => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#6200ea" />;
   }
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <Text style={styles.title}>Available umbrellas in {buildingName}</Text>
-      {umbrellas.map((umbrella) => (
-        <TouchableOpacity
-          key={umbrella.umbrella_id}
-          style={styles.umbrellaButton}
-          onPress={() => confirmRentUmbrella(umbrella.umbrella_id)}
-        >
-          <Text style={styles.buttonText}>{umbrella.umbrella_id}</Text>
-        </TouchableOpacity>
-      ))}
+      {umbrellas.length > 0 ? (
+        umbrellas.map((umbrella) => (
+          <TouchableOpacity
+            key={umbrella.umbrella_id}
+            style={styles.button}
+            onPress={() => confirmRentUmbrella(umbrella.umbrella_id)}
+          >
+            <Text style={styles.buttonText}>
+              Umbrella ID: {umbrella.umbrella_id}
+            </Text>
+          </TouchableOpacity>
+        ))
+      ) : (
+        <Text style={styles.noUmbrellasText}>No available umbrellas</Text>
+      )}
     </View>
   );
 };
@@ -100,23 +121,34 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 24,
-    marginBottom: 20,
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 24,
+    textAlign: 'center',
   },
-  umbrellaButton: {
-    padding: 15,
-    backgroundColor: '#007bff',
-    borderRadius: 5,
-    marginBottom: 10,
-    width: '80%',
+  button: {
+    height: 50,
+    width: '100%',
+    backgroundColor: '#6200ea',
+    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 8,
+    marginTop: 16,
   },
   buttonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  noUmbrellasText: {
+    fontSize: 18,
+    color: 'gray',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 
